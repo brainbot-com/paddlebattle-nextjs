@@ -6,22 +6,38 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint \"*/**/*.{js,jsx,ts,tsx}\"",
+    "lint:fix": "eslint \"*/**/*.{js,jsx,ts,tsx}\" --fix"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.1.1",
+    "@shutter-network/shutter-sdk": "^0.0.1",
+    "@stablelib/ed25519": "^2.0.2",
+    "@tanstack/react-query": "^5.81.2",
+    "lucide-react": "^0.523.0",
+    "next": "15.3.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "next": "15.3.3"
+    "react-hook-form": "^7.58.1",
+    "viem": "^2.31.4",
+    "wagmi": "^2.15.6",
+    "zod": "^3.25.67"
   },
   "devDependencies": {
-    "typescript": "^5",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "@tailwindcss/postcss": "^4",
-    "tailwindcss": "^4",
-    "eslint": "^9",
-    "eslint-config-next": "15.3.3",
-    "@eslint/eslintrc": "^3"
+    "@eslint/eslintrc": "^3.3.1",
+    "@tailwindcss/postcss": "^4.1.10",
+    "@types/node": "^24.0.4",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "@typescript-eslint/eslint-plugin": "^8.35.0",
+    "@typescript-eslint/parser": "^8.35.0",
+    "eslint": "^9.29.0",
+    "eslint-config-next": "^15.3.4",
+    "eslint-config-prettier": "^10.1.5",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-prettier": "^5.5.1",
+    "prettier": "^3.6.1",
+    "tailwindcss": "^4.1.10",
+    "typescript": "^5.8.3"
   }
 }
