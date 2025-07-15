@@ -917,12 +917,13 @@
     "@noble/hashes" "~1.8.0"
     "@scure/base" "~1.2.5"
 
-"@shutter-network/shutter-sdk@^0.0.1":
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/@shutter-network/shutter-sdk/-/shutter-sdk-0.0.1.tgz#82d672494381cd6b9fc6ea80152bcccae07f904d"
-  integrity sha512-Xh2vrD6G1nOom9dLa73TSE9+sGAMS5yKQFzi7BzFcXRwKbIDcBtDYC/g9hyoAEu3wrmFLtMcrrAoAs/cgwDSZg==
+"@shutter-network/shutter-sdk@^0.0.2":
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/@shutter-network/shutter-sdk/-/shutter-sdk-0.0.2.tgz#703f19484b36d9c7faf7bba45a433b643bea9610"
+  integrity sha512-xqfIa+hiYUE2VpeFeTvRmCZBPxkmmc1Qyl508Qg3hEkqLjL3qxuaciinYuFM3I5KJXjYBnySzY8DA5yNvHZwFw==
   dependencies:
     browser-or-node "^3.0.0"
+    buffer "^6.0.3"
     lodash "^4.17.21"
     viem "^2.23.2"
 
