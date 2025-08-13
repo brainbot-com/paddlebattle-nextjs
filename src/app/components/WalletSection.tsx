@@ -1,11 +1,12 @@
 'use client'
 
 import { useAccount } from 'wagmi'
+import type { Auction } from '../utils/api'
 import { ConnectWallet } from './ConnectWallet'
 import { SealedBidForm } from './SealedBidForm'
 import { WalletStatus } from './WalletStatus'
 
-export default function WalletSection() {
+export default function WalletSection({ auction }: { auction?: Auction }) {
   const { isConnected } = useAccount()
 
   if (!isConnected) {
@@ -39,7 +40,7 @@ export default function WalletSection() {
     )
   }
 
-  return <SealedBidForm />
+  return <SealedBidForm auction={auction} />
 }
 
 // Export WalletStatus for use in the main page layout

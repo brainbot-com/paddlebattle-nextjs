@@ -3,11 +3,18 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { encryptData } from '@shutter-network/shutter-sdk'
 import { Eye, EyeOff, Loader2, Lock } from 'lucide-react'
+import { useParams } from 'next/navigation'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { stringToHex } from 'viem'
 import { useAccount, useSignMessage } from 'wagmi'
 import { z } from 'zod'
+import {
+  Auction,
+  getDataForEncryption,
+  registerIdentity,
+  submitBidToBackend,
+} from '../utils/api'
 
 // Form validation schema
 const bidSchema = z.object({
@@ -24,11 +31,8 @@ const bidSchema = z.object({
 
 type BidFormData = z.infer<typeof bidSchema>
 
-// Shutter API configuration
-const SHUTTER_API_BASE =
-  'https://shutter-api.chiado.staging.shutter.network/api'
-
-export function SealedBidForm() {
+export function SealedBidForm({ auction }: { auction?: Auction }) {
+  const params = useParams<{ auctionSlug?: string }>()
   const { address } = useAccount()
   const { signMessageAsync } = useSignMessage()
 
@@ -55,7 +59,6 @@ export function SealedBidForm() {
     setSubmissionStatus({ type: null, message: '' })
 
     try {
-      // Step 1: Register identity with Shutter API
       const decryptionTimestamp = Math.floor(Date.now() / 1000) + 3600 // 1 hour from now
 
       // Generate a proper 32-byte (64 hex character) identity prefix
@@ -64,36 +67,9 @@ export function SealedBidForm() {
         .map(b => b.toString(16).padStart(2, '0'))
         .join('')}`
 
-      const registerResponse = await fetch(
-        `${SHUTTER_API_BASE}/register_identity`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            decryptionTimestamp,
-            identityPrefix,
-          }),
-        },
-      )
+      await registerIdentity(decryptionTimestamp, identityPrefix)
 
-      if (!registerResponse.ok) {
-        throw new Error('Failed to register identity')
-      }
-
-      await registerResponse.json()
-
-      // Step 2: Get encryption data
-      const encryptionResponse = await fetch(
-        `${SHUTTER_API_BASE}/get_data_for_encryption?address=${address}&identityPrefix=${identityPrefix}`,
-      )
-
-      if (!encryptionResponse.ok) {
-        throw new Error('Failed to get encryption data')
-      }
-
-      const encryptionData = await encryptionResponse.json()
+      const encryptionData = await getDataForEncryption(address, identityPrefix)
 
       const msgHex = stringToHex(data.bidAmount)
       const sigmaHex = `0x${Buffer.from(crypto.getRandomValues(new Uint8Array(32))).toString('hex')}`
@@ -105,37 +81,31 @@ export function SealedBidForm() {
         sigmaHex as `0x${string}`,
       )
 
-      // Step 4: Create message to sign
-      const messageToSign = `Sealed Bid Submission\n\nName: ${data.name}\nEmail: ${data.email}\nBid Identity: ${encryptionData.identity}\nTimestamp: ${Date.now()}`
+      const messageToSign = `Sealed Bid Submission\n\nName: ${data.name}\nEmail: ${data.email}\nBid Identity Prefix: ${encryptionData.message.identity_prefix}\nTimestamp: ${Date.now()}`
 
-      // Step 5: Sign the message
       const signature = await signMessageAsync({
         message: messageToSign,
       })
 
-      // Step 6: Submit to backend (sample endpoint)
-      const backendResponse = await fetch('/api/submit-bid', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      const auctionSlug = params?.auctionSlug || auction?.slug || ''
+
+      const backendOk = await submitBidToBackend({
+        auctionSlug,
+        name: data.name,
+        email: data.email,
+        encryptedBid,
+        encryptionKeys: {
+          identity: encryptionData.message.identity,
+          eonKey: encryptionData.message.eon_key,
+          epochId: encryptionData.message.epoch_id,
         },
-        body: JSON.stringify({
-          name: data.name,
-          email: data.email,
-          encryptedBid,
-          encryptionKeys: {
-            identity: encryptionData.identity,
-            eonKey: encryptionData.eon_key,
-            epochId: encryptionData.epoch_id,
-          },
-          signature,
-          messageToSign,
-          walletAddress: address,
-          decryptionTimestamp,
-        }),
+        signature,
+        messageToSign,
+        walletAddress: address,
+        decryptionTimestamp,
       })
 
-      if (!backendResponse.ok) {
+      if (!backendOk) {
         // Since this is a sample endpoint that might not exist, we'll simulate success
         console.warn('Backend endpoint not available, simulating success')
       }
@@ -210,6 +180,21 @@ export function SealedBidForm() {
         </p>
       </div>
 
+      <div>
+        <label
+          htmlFor="auctionName"
+          className="block text-sm font-medium text-gray-700 mb-2"
+        >
+          Auction Name
+        </label>
+        <input
+          type="text"
+          id="auctionName"
+          value={auction?.name || params?.auctionSlug || ''}
+          disabled
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-700"
+        />
+      </div>
       {/* Name Field */}
       <div>
         <label
