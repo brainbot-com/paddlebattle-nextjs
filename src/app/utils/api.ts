@@ -44,14 +44,36 @@ async function httpGet<T>(url: string): Promise<T> {
   return (await response.json()) as T
 }
 
+interface RegisterIdentityResponse {
+  message: {
+    identity: `0x${string}`
+    eon_key: `0x${string}`
+    eon: number
+    tx_hash: `0x${string}`
+    identity_prefix: `0x${string}`
+  }
+}
+
 export async function registerIdentity(
   decryptionTimestamp: number,
-  identityPrefix: string,
-): Promise<void> {
-  await httpPost<void>(`${SHUTTER_API_BASE}/register_identity`, {
-    decryptionTimestamp,
-    identityPrefix,
-  })
+  identityPrefix?: string,
+): Promise<RegisterIdentityResponse> {
+  if (!identityPrefix) {
+    return httpPost<RegisterIdentityResponse>(
+      `${SHUTTER_API_BASE}/register_identity`,
+      {
+        decryptionTimestamp,
+      },
+    )
+  } else {
+    return httpPost<RegisterIdentityResponse>(
+      `${SHUTTER_API_BASE}/register_identity`,
+      {
+        decryptionTimestamp,
+        identityPrefix,
+      },
+    )
+  }
 }
 
 export async function getDataForEncryption(
@@ -70,9 +92,12 @@ export interface SealedFormData {
   email: string
   encryptedBid: string
   encryptionKeys: {
+    identityPrefix: `0x${string}`
     identity: `0x${string}`
+    eon: number
     eonKey: `0x${string}`
     epochId: `0x${string}`
+    txHash: `0x${string}`
   }
   signature: `0x${string}`
   messageToSign: string
@@ -80,19 +105,16 @@ export interface SealedFormData {
   decryptionTimestamp: number
 }
 
-export async function submitBidToBackend(
-  payload: SealedFormData,
-): Promise<boolean> {
-  try {
-    const response = await fetch(`${BACKEND_API_BASE}/submit-bid`, {
+export async function submitBidToBackend(payload: SealedFormData) {
+  const response = await fetch(
+    `${BACKEND_API_BASE}/auctions/sealed/${payload.auctionSlug}/submit`,
+    {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
-    })
-    return response.ok
-  } catch {
-    return false
-  }
+    },
+  )
+  return response.json()
 }
 
 export interface Auction {
