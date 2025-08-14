@@ -59,25 +59,33 @@ export function SealedBidForm({ auction }: { auction?: Auction }) {
     setSubmissionStatus({ type: null, message: '' })
 
     try {
-      const decryptionTimestamp = Math.floor(Date.now() / 1000) + 3600 // 1 hour from now
+      const decryptionTimestamp = Math.floor(
+        new Date(auction?.expirationTime || '').getTime() / 1000,
+      )
 
-      // Generate a proper 32-byte (64 hex character) identity prefix
-      const randomBytes = crypto.getRandomValues(new Uint8Array(32))
-      const identityPrefix = `0x${Array.from(randomBytes)
-        .map(b => b.toString(16).padStart(2, '0'))
-        .join('')}`
+      const registerIdentityResponse =
+        await registerIdentity(decryptionTimestamp)
 
-      await registerIdentity(decryptionTimestamp, identityPrefix)
+      const encryptionData = await getDataForEncryption(
+        address,
+        registerIdentityResponse.message.identity_prefix,
+      )
 
-      const encryptionData = await getDataForEncryption(address, identityPrefix)
-
-      const msgHex = stringToHex(data.bidAmount)
+      const bidData = {
+        name: data.name,
+        email: data.email,
+        walletAddress: address,
+        bidAmount: data.bidAmount,
+        auctionSlug: params?.auctionSlug || auction?.slug || '',
+        timestamp: Date.now(),
+      }
+      const msgHex = stringToHex(JSON.stringify(bidData))
       const sigmaHex = `0x${Buffer.from(crypto.getRandomValues(new Uint8Array(32))).toString('hex')}`
 
       const encryptedBid = await encryptData(
         msgHex as `0x${string}`,
-        encryptionData.message.identity as `0x${string}`,
-        encryptionData.message.eon_key as `0x${string}`,
+        registerIdentityResponse.message.identity as `0x${string}`,
+        registerIdentityResponse.message.eon_key as `0x${string}`,
         sigmaHex as `0x${string}`,
       )
 
@@ -89,14 +97,17 @@ export function SealedBidForm({ auction }: { auction?: Auction }) {
 
       const auctionSlug = params?.auctionSlug || auction?.slug || ''
 
-      const backendOk = await submitBidToBackend({
+      const submitBidResponse = await submitBidToBackend({
         auctionSlug,
         name: data.name,
         email: data.email,
         encryptedBid,
         encryptionKeys: {
-          identity: encryptionData.message.identity,
-          eonKey: encryptionData.message.eon_key,
+          identityPrefix: registerIdentityResponse.message.identity_prefix,
+          identity: registerIdentityResponse.message.identity,
+          eon: registerIdentityResponse.message.eon,
+          eonKey: registerIdentityResponse.message.eon_key,
+          txHash: registerIdentityResponse.message.tx_hash,
           epochId: encryptionData.message.epoch_id,
         },
         signature,
@@ -105,9 +116,8 @@ export function SealedBidForm({ auction }: { auction?: Auction }) {
         decryptionTimestamp,
       })
 
-      if (!backendOk) {
-        // Since this is a sample endpoint that might not exist, we'll simulate success
-        console.warn('Backend endpoint not available, simulating success')
+      if (!submitBidResponse.success) {
+        throw new Error(`Failed to submit bid: ${submitBidResponse.error}`)
       }
 
       setSubmissionStatus({
@@ -241,12 +251,17 @@ export function SealedBidForm({ auction }: { auction?: Auction }) {
           htmlFor="bidAmount"
           className="block text-sm font-medium text-gray-700 mb-2"
         >
-          Bid Amount (ETH)
+          Bid Amount
         </label>
         <div className="relative">
           <input
             {...register('bidAmount')}
-            type={showBidAmount ? 'text' : 'password'}
+            type="number"
+            style={
+              showBidAmount
+                ? {}
+                : ({ WebkitTextSecurity: 'disc' } as React.CSSProperties)
+            }
             id="bidAmount"
             className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-gray-900 placeholder-gray-500 bg-white"
             placeholder="0.0"
