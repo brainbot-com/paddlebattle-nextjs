@@ -127,6 +127,7 @@ export default function App() {
             <BiddingInterface
               highestBid={highestBid}
               totalRaised={totalRaised}
+              auctionEndTime={auctionEndTime}
             />
           </div>
         </div>
