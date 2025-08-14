@@ -1,5 +1,5 @@
-import { Clock, Gavel, User } from "lucide-react";
-import { Button } from "./ui/button";
+import { Clock, Gavel, User } from 'lucide-react'
+import { Button } from './ui/button'
 
 export function AuctionHeader() {
   return (
@@ -10,13 +10,28 @@ export function AuctionHeader() {
             <Gavel className="w-8 h-8 text-primary" />
             <h1 className="text-2xl font-semibold">PaddleBattle</h1>
           </div>
-          
+
           <nav className="hidden md:flex items-center gap-6">
-            <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">Auctions</a>
-            <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">About</a>
-            <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">Contact</a>
+            <a
+              href="#"
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Auctions
+            </a>
+            <a
+              href="#"
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
+              About
+            </a>
+            <a
+              href="#"
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Contact
+            </a>
           </nav>
-          
+
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2 bg-red-50 text-red-600 px-3 py-1 rounded-full">
               <Clock className="w-4 h-4" />
@@ -30,5 +45,5 @@ export function AuctionHeader() {
         </div>
       </div>
     </header>
-  );
+  )
 }

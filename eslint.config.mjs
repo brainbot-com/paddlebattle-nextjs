@@ -18,7 +18,7 @@ export default [
   ...compat.extends('plugin:prettier/recommended', 'next/core-web-vitals', 'plugin:@typescript-eslint/recommended'),
   js.configs.recommended,
   {
-    ignores: ['eslint.config.mjs', '.next/**'],
+    ignores: ['eslint.config.mjs', '.next/**', 'public/blst.js'],
   },
   {
     files: ['**/*.{js,jsx,ts,tsx}'],

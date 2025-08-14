@@ -1,7 +1,7 @@
-import { TrendingUp, Users, Shield, Award } from "lucide-react";
-import { Button } from "./ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
-import { Badge } from "./ui/badge";
+import { TrendingUp, Users, Shield, Award } from 'lucide-react'
+import { Badge } from './ui/badge'
+import { Button } from './ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
 
 export function BiddingInterface() {
   return (
@@ -24,7 +24,7 @@ export function BiddingInterface() {
               28 bids • 14 bidders
             </div>
           </div>
-          
+
           <div className="grid grid-cols-2 gap-3">
             <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
               Fast Bid $439
@@ -33,13 +33,13 @@ export function BiddingInterface() {
               Custom Bid
             </Button>
           </div>
-          
+
           <div className="text-center text-sm text-muted-foreground">
             Next minimum bid: $429
           </div>
         </CardContent>
       </Card>
-      
+
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -66,7 +66,7 @@ export function BiddingInterface() {
               <div className="font-semibold">Aug 13, 3:30 PM</div>
             </div>
           </div>
-          
+
           <div className="pt-4 border-t">
             <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
               <Award className="w-4 h-4" />
@@ -81,5 +81,5 @@ export function BiddingInterface() {
         </CardContent>
       </Card>
     </div>
-  );
+  )
 }
