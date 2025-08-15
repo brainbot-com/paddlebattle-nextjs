@@ -43,6 +43,7 @@
     "@shutter-network/shutter-sdk": "^0.0.2",
     "@stablelib/ed25519": "^2.0.2",
     "@tanstack/react-query": "^5.81.2",
+    "axios": "^1.11.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
