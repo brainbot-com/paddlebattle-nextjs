@@ -1,10 +1,15 @@
 'use client'
 
 import dynamic from 'next/dynamic'
+import Link from 'next/link'
 import { useParams } from 'next/navigation'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { truncateOrEns } from '@/app/utils/helpers'
-import { fetchAuctionBySlug, type Auction } from '../../../utils/api'
+import {
+  Auction,
+  fetchSealedAuctionResult,
+  type SealedBid,
+} from '../../../utils/api'
 
 const WalletStatus = dynamic(
   () =>
@@ -19,39 +24,37 @@ const WalletStatus = dynamic(
 
 export default function ResultPage() {
   const { auctionSlug } = useParams<{ auctionSlug: string }>()
+  const [bids, setBids] = useState<SealedBid[] | null>(null)
   const [auction, setAuction] = useState<Auction | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
 
-  const winner = auction?.winnerWalletAddress
+  const winnerAddress = auction?.winnerWalletAddress
     ? truncateOrEns(auction.winnerWalletAddress, {})
     : 'TBD'
 
   useEffect(() => {
     let cancelled = false
     async function load() {
-      setLoading(true)
-      setError(null)
-      const data = await fetchAuctionBySlug(auctionSlug)
-      if (cancelled) return
-      if (!data) {
-        setError('Auction not found.')
-        setAuction(null)
-      } else {
-        setAuction(data)
+      try {
+        setLoading(true)
+        setError(null)
+        const data = await fetchSealedAuctionResult(auctionSlug)
+        if (cancelled) return
+        setBids(data?.attendees || null)
+        setAuction(data?.auction || null)
+        setLoading(false)
+      } catch (e) {
+        console.error(e)
+        setLoading(false)
+        setError(e instanceof Error ? e.message : 'Unknown error')
       }
-      setLoading(false)
     }
     if (auctionSlug) load()
     return () => {
       cancelled = true
     }
   }, [auctionSlug])
-
-  const isRunning = useMemo(() => {
-    if (!auction) return false
-    return new Date(auction.expirationTime).getTime() > Date.now()
-  }, [auction])
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
@@ -76,24 +79,14 @@ export default function ResultPage() {
               <p className="text-gray-600">Loading auction…</p>
             </div>
           ) : error ? (
-            <div className="text-center space-y-3">
-              <p className="text-red-600">{error}</p>
-            </div>
-          ) : isRunning ? (
             <div className="text-center">
-              <h2 className="text-xl font-semibold text-gray-900 mb-2">
-                Auction Still Running
-              </h2>
-              <p className="text-gray-600 mb-6">
-                Results will be available after the auction ends. You can place
-                a sealed bid now.
-              </p>
-              <a
-                href={`/${auction?.slug}/bidForm`}
+              <div className="text-gray-900 mb-5">{error}</div>
+              <Link
+                href="/"
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
               >
-                Go to Bid Form
-              </a>
+                Go to home page
+              </Link>
             </div>
           ) : (
             <div>
@@ -105,12 +98,59 @@ export default function ResultPage() {
                 <p className="text-gray-700">
                   Winner Wallet Address:
                   <span className="ml-2 font-mono text-sm font-semibold text-gray-900">
-                    {winner}
+                    {winnerAddress}
                   </span>
                 </p>
                 <p className="mt-2 text-sm text-gray-600">
                   Ended at: {new Date(auction!.expirationTime).toLocaleString()}
                 </p>
+              </div>
+
+              {/* Attendees Section */}
+              <div className="mt-6">
+                <h3 className="text-lg font-medium text-gray-900 mb-4">
+                  All Attendees ({bids?.length})
+                </h3>
+                <div className="flex justify-between items-center">
+                  <p className="text-sm text-gray-500">Wallet Address</p>
+                  <p className="text-sm text-gray-500">Bid Amount</p>
+                </div>
+                <div className="space-y-3">
+                  {[...(bids || [])]
+                    .sort((a, b) => b.decryptedBidAmount - a.decryptedBidAmount)
+                    .map((bid, index) => (
+                      <div
+                        key={bid.id}
+                        className="flex justify-between items-center p-3 rounded-lg border border-gray-200 bg-white"
+                      >
+                        <div className="flex items-center space-x-3">
+                          <div className="flex-shrink-0 w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
+                            <span className="text-sm font-medium text-gray-600">
+                              #{index + 1}
+                            </span>
+                          </div>
+                          <div className="relative group">
+                            <p className="text-sm font-mono text-gray-900 cursor-pointer">
+                              {truncateOrEns(bid.walletAddress, {})}
+                            </p>
+                            {/* Tooltip */}
+                            <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block z-10">
+                              <div className="bg-gray-900 text-white text-xs rounded py-1 px-2 whitespace-nowrap">
+                                {bid.walletAddress}
+                                {/* Arrow */}
+                                <div className="absolute top-full left-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-sm font-semibold text-gray-900">
+                            ${bid.decryptedBidAmount.toLocaleString()}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                </div>
               </div>
             </div>
           )}

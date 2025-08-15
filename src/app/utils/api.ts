@@ -54,3 +54,35 @@ export async function fetchAuctionBySlug(
 export async function fetchSealedAuctions(): Promise<Auction[]> {
   return httpGet<Auction[]>(`${BACKEND_API_BASE}/auctions/sealed`)
 }
+
+export interface SealedBid {
+  id: number
+  auctionSlug: string
+  walletAddress: `0x${string}`
+  encryptedBid: string
+  decryptedBidAmount: number
+  decryptionTimestamp: number
+  createdAt: string
+  updatedAt: string
+  identity: `0x${string}`
+  eon: number
+  eonKey: `0x${string}`
+  epochId: `0x${string}`
+  txHash: `0x${string}`
+  signature: `0x${string}`
+  messageToSign: string
+}
+
+export interface SealedAuctionResult {
+  auction: Auction
+  attendees: SealedBid[]
+  winner: SealedBid
+}
+
+export async function fetchSealedAuctionResult(
+  slug: string,
+): Promise<SealedAuctionResult | null> {
+  return httpGet<SealedAuctionResult>(
+    `${BACKEND_API_BASE}/auctions/sealed/${slug}/results`,
+  )
+}
