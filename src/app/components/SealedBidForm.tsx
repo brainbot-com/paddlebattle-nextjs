@@ -97,7 +97,7 @@ export function SealedBidForm({ auction }: { auction?: Auction }) {
 
       const auctionSlug = params?.auctionSlug || auction?.slug || ''
 
-      const submitBidResponse = await submitBidToBackend({
+      await submitBidToBackend({
         auctionSlug,
         name: data.name,
         email: data.email,
@@ -115,10 +115,6 @@ export function SealedBidForm({ auction }: { auction?: Auction }) {
         walletAddress: address,
         decryptionTimestamp,
       })
-
-      if (!submitBidResponse.success) {
-        throw new Error(`Failed to submit bid: ${submitBidResponse.error}`)
-      }
 
       setSubmissionStatus({
         type: 'success',

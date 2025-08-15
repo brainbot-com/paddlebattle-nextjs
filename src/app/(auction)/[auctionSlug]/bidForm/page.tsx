@@ -31,6 +31,13 @@ const WalletStatus = dynamic(
   },
 )
 
+enum ErrorType {
+  AuctionNotFound = 'Auction not found!',
+  AuctionNotSealed = 'AuctionNotSealed',
+  AuctionEnded = 'AuctionEnded',
+  Unknown = 'Unknown',
+}
+
 export default function BidFormPage() {
   const { auctionSlug } = useParams<{ auctionSlug: string }>()
   const [auction, setAuction] = useState<Auction | null>(null)
@@ -40,23 +47,25 @@ export default function BidFormPage() {
   useEffect(() => {
     let cancelled = false
     async function load() {
-      setLoading(true)
-      setError(null)
-      const data = await fetchAuctionBySlug(auctionSlug)
-      if (cancelled) return
-      if (!data) {
-        setError('Auction not found.')
-        setAuction(null)
-      } else if (data.type !== 'sealed') {
-        setError(
-          `This auction is not a sealed-bid auction. To place a bid, visit https://www.paddlebattle.auction/${auctionSlug}`,
-        )
-        setAuction(data)
-      } else {
-        setAuction(data)
+      try {
+        setLoading(true)
+        setError(null)
+        const data = await fetchAuctionBySlug(auctionSlug)
+        if (cancelled) return
+        if (data?.type !== 'sealed') {
+          setError(`This auction is not a sealed-bid auction!`)
+          setAuction(data)
+        } else {
+          setAuction(data)
+        }
+        setLoading(false)
+      } catch (e) {
+        console.error(e)
+        setLoading(false)
+        setError(ErrorType.AuctionNotFound)
       }
-      setLoading(false)
     }
+
     if (auctionSlug) load()
     return () => {
       cancelled = true
@@ -96,12 +105,20 @@ export default function BidFormPage() {
             <div className="text-center space-y-3">
               <p className="text-red-600">{error}</p>
               <a
-                href={`https://www.paddlebattle.auction/${auctionSlug}`}
+                href={
+                  error === ErrorType.AuctionNotFound
+                    ? '/'
+                    : `https://www.paddlebattle.auction/${auctionSlug}`
+                }
                 className="inline-block px-4 py-2 text-sm rounded-md bg-blue-600 text-white hover:bg-blue-700"
                 target="_blank"
                 rel="noreferrer"
               >
-                Go to regular auction page
+                Go to{' '}
+                {error === ErrorType.AuctionNotFound
+                  ? 'home'
+                  : 'regular auction'}{' '}
+                page
               </a>
             </div>
           ) : isEnded ? (

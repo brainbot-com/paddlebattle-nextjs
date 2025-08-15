@@ -1,9 +1,22 @@
+import axios from 'axios'
+
 export const SHUTTER_API_BASE =
   'https://shutter-api.chiado.staging.shutter.network/api'
 
 export const BACKEND_API_BASE =
   process.env.NEXT_PUBLIC_BACKEND_API_BASE ||
   'https://pb-backend.generalmagic.io/api'
+
+function extractMessage(data: unknown): string | undefined {
+  if (!data || typeof data !== 'object') return undefined
+  const record = data as Record<string, unknown>
+  const fields = ['message', 'error', 'description']
+  for (const field of fields) {
+    const value = record[field]
+    if (typeof value === 'string') return value
+  }
+  return undefined
+}
 
 export interface GetEncryptionDataResponse {
   message: {
@@ -16,32 +29,42 @@ export interface GetEncryptionDataResponse {
 }
 
 async function httpPost<T>(url: string, body: unknown): Promise<T> {
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(body),
-  })
-
-  if (!response.ok) {
-    throw new Error(`${response.status} ${response.statusText}`)
-  }
-
-  // Some endpoints may return empty body
   try {
-    return (await response.json()) as T
-  } catch {
-    return undefined as unknown as T
+    const response = await axios.post(url, body, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    return response.data as T
+  } catch (error: unknown) {
+    const err = error as {
+      response?: { status?: number; data?: unknown }
+      message?: string
+    }
+    const status = err.response?.status ?? 'ERR'
+    const msg =
+      extractMessage(err.response?.data) || err.message || 'Request failed'
+    throw new Error(`Error (${status}): ${msg}`)
   }
 }
 
 async function httpGet<T>(url: string): Promise<T> {
-  const response = await fetch(url)
-  if (!response.ok) {
-    throw new Error(`${response.status} ${response.statusText}`)
+  try {
+    const response = await axios.get(url)
+    return response.data as T
+  } catch (error: unknown) {
+    const err = error as {
+      response?: { status?: number; data?: unknown }
+      message?: string
+    }
+    const status = err.response?.status ?? 'ERR'
+    const body = err.response?.data
+    if (typeof body === 'string') {
+      throw new Error(body)
+    }
+    const msg = extractMessage(body) || err.message || 'Request failed'
+    throw new Error(`Error (${status}): ${msg}`)
   }
-  return (await response.json()) as T
 }
 
 interface RegisterIdentityResponse {
@@ -106,15 +129,10 @@ export interface SealedFormData {
 }
 
 export async function submitBidToBackend(payload: SealedFormData) {
-  const response = await fetch(
+  return httpPost(
     `${BACKEND_API_BASE}/auctions/sealed/${payload.auctionSlug}/submit`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    },
+    payload,
   )
-  return response.json()
 }
 
 export interface Auction {
@@ -135,25 +153,9 @@ export interface Auction {
 export async function fetchAuctionBySlug(
   slug: string,
 ): Promise<Auction | null> {
-  try {
-    const res = await fetch(`${BACKEND_API_BASE}/auctionBySlug/${slug}`)
-    if (!res.ok) {
-      return null
-    }
-    return (await res.json()) as Auction
-  } catch {
-    return null
-  }
+  return httpGet<Auction>(`${BACKEND_API_BASE}/auctionBySlug/${slug}`)
 }
 
 export async function fetchSealedAuctions(): Promise<Auction[]> {
-  try {
-    const res = await fetch(`${BACKEND_API_BASE}/auctions/sealed`)
-    if (!res.ok) {
-      return []
-    }
-    return (await res.json()) as Auction[]
-  } catch {
-    return []
-  }
+  return httpGet<Auction[]>(`${BACKEND_API_BASE}/auctions/sealed`)
 }

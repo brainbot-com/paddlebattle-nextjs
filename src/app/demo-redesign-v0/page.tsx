@@ -1,5 +1,6 @@
 'use client'
 
+import axios from 'axios'
 import {
   Award,
   Clock,
@@ -58,10 +59,10 @@ export default function AuctionPage() {
 
     async function loadAuction() {
       try {
-        const res = await fetch(
+        const res = await axios.get(
           `https://pb-backend.generalmagic.io/api/auctionBySlug/${slug}`,
         )
-        const auction = await res.json()
+        const auction = res.data
         if (auction?.expirationTime)
           setAuctionEndTime(formatDate(auction.expirationTime))
       } catch (e) {
@@ -71,14 +72,14 @@ export default function AuctionPage() {
 
     async function loadTxs() {
       try {
-        const res = await fetch(
+        const res = await axios.get(
           `https://pb-backend.generalmagic.io/api/txsBySlug/${slug}`,
         )
         const txs: Array<{
           fromWalletAddress: string
           amount: number
           fromEns?: string
-        }> = await res.json()
+        }> = res.data
 
         const sumByAddress: Record<string, number> = {}
         const ensMap: Record<string, string> = {}
