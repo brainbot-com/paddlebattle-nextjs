@@ -9,12 +9,8 @@ import { useForm } from 'react-hook-form'
 import { stringToHex } from 'viem'
 import { useAccount, useSignMessage } from 'wagmi'
 import { z } from 'zod'
-import {
-  Auction,
-  getDataForEncryption,
-  registerIdentity,
-  submitBidToBackend,
-} from '../utils/api'
+import { Auction, submitBidToBackend } from '../utils/api'
+import { getDataForEncryption, registerIdentity } from '../utils/shutter'
 
 // Form validation schema
 const bidSchema = z.object({
