@@ -28,7 +28,7 @@ const bidSchema = z.object({
 
 type BidFormData = z.infer<typeof bidSchema>
 
-export function SealedBidForm({ auction }: { auction?: Auction }) {
+export default function SealedBidForm({ auction }: { auction?: Auction }) {
   const params = useParams<{ auctionSlug?: string }>()
   const { address } = useAccount()
   const { signMessageAsync } = useSignMessage()

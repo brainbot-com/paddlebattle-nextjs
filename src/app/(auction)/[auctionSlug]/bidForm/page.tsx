@@ -5,8 +5,8 @@ import { useParams } from 'next/navigation'
 import { useEffect, useMemo, useState } from 'react'
 import { fetchAuctionBySlug, type Auction } from '../../../utils/api'
 
-const WalletSection = dynamic(
-  () => import('../../../components/WalletSection'),
+const SealedBidForm = dynamic(
+  () => import('../../../components/SealedBidForm'),
   {
     ssr: false,
     loading: () => (
@@ -131,7 +131,7 @@ export default function BidFormPage() {
               </a>
             </div>
           ) : (
-            <WalletSection auction={auction || undefined} />
+            <SealedBidForm auction={auction || undefined} />
           )}
         </div>
 
