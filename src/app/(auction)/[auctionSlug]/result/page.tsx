@@ -1,6 +1,5 @@
 'use client'
 
-import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -10,17 +9,6 @@ import {
   fetchSealedAuctionResult,
   type SealedBid,
 } from '../../../utils/api'
-
-const WalletStatus = dynamic(
-  () =>
-    import('../../../components/WalletStatus').then(mod => ({
-      default: mod.WalletStatus,
-    })),
-  {
-    ssr: false,
-    loading: () => null,
-  },
-)
 
 export default function ResultPage() {
   const { auctionSlug } = useParams<{ auctionSlug: string }>()
@@ -58,10 +46,6 @@ export default function ResultPage() {
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="absolute top-4 right-4 max-w-xs">
-        <WalletStatus />
-      </div>
-
       <div className="max-w-md mx-auto">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">

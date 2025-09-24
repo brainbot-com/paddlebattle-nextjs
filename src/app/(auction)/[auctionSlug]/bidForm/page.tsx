@@ -20,16 +20,10 @@ const WalletSection = dynamic(
   },
 )
 
-const WalletStatus = dynamic(
-  () =>
-    import('../../../components/WalletStatus').then(mod => ({
-      default: mod.WalletStatus,
-    })),
-  {
-    ssr: false,
-    loading: () => null,
-  },
-)
+const WalletStatus = dynamic(() => import('../../../components/WalletStatus'), {
+  ssr: false,
+  loading: () => null,
+})
 
 enum ErrorType {
   AuctionNotFound = 'Auction not found!',

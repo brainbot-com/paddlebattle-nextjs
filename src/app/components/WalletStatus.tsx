@@ -1,21 +1,43 @@
 'use client'
 
-import { LogOut, Wallet } from 'lucide-react'
+import { LogOut, Wallet as WalletIcon } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import { useAccount, useDisconnect } from 'wagmi'
+import { ConnectWalletModal } from './ConnectWalletModal'
 
-export function WalletStatus() {
+export default function WalletStatus() {
   const { address, isConnected } = useAccount()
   const { disconnect } = useDisconnect()
+  const [isModalOpen, setIsModalOpen] = useState(false)
+
+  useEffect(() => {
+    if (isConnected) setIsModalOpen(false)
+  }, [isConnected])
 
   if (!isConnected || !address) {
-    return null
+    return (
+      <div className="flex items-center justify-end">
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="inline-flex items-center space-x-2 px-3 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+        >
+          <WalletIcon className="w-4 h-4" />
+          <span>Connect Wallet</span>
+        </button>
+        <ConnectWalletModal
+          open={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          title="Connect Your Wallet"
+        />
+      </div>
+    )
   }
 
   return (
     <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-3 flex items-center justify-between">
       <div className="flex items-center space-x-2">
         <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-          <Wallet className="w-4 h-4 text-green-600" />
+          <WalletIcon className="w-4 h-4 text-green-600" />
         </div>
         <div>
           <p className="text-sm font-medium text-gray-900">Wallet Connected</p>
