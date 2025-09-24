@@ -1,21 +1,8 @@
 'use client'
 
-import dynamic from 'next/dynamic'
 import { useEffect, useMemo, useState } from 'react'
 import AuctionCard from './components/AuctionCard'
 import { fetchSealedAuctions, type Auction } from './utils/api'
-
-// Dynamically import WalletStatus for top left display
-const WalletStatus = dynamic(
-  () =>
-    import('./components/WalletStatus').then(mod => ({
-      default: mod.WalletStatus,
-    })),
-  {
-    ssr: false,
-    loading: () => null,
-  },
-)
 
 export default function Home() {
   const [auctions, setAuctions] = useState<Auction[]>([])
@@ -56,10 +43,6 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="absolute top-4 right-4 max-w-xs">
-        <WalletStatus />
-      </div>
-
       <div className="mx-auto max-w-5xl">
         <div className="text-center mb-10">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">

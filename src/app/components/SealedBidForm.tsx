@@ -4,13 +4,14 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { encryptData } from '@shutter-network/shutter-sdk'
 import { Eye, EyeOff, Loader2, Lock } from 'lucide-react'
 import { useParams } from 'next/navigation'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { stringToHex } from 'viem'
 import { useAccount, useSignMessage } from 'wagmi'
 import { z } from 'zod'
 import { Auction, submitBidToBackend } from '../utils/api'
 import { getDataForEncryption, registerIdentity } from '../utils/shutter'
+import { ConnectWalletModal } from './ConnectWalletModal'
 
 // Form validation schema
 const bidSchema = z.object({
@@ -27,7 +28,7 @@ const bidSchema = z.object({
 
 type BidFormData = z.infer<typeof bidSchema>
 
-export function SealedBidForm({ auction }: { auction?: Auction }) {
+export default function SealedBidForm({ auction }: { auction?: Auction }) {
   const params = useParams<{ auctionSlug?: string }>()
   const { address } = useAccount()
   const { signMessageAsync } = useSignMessage()
@@ -38,6 +39,13 @@ export function SealedBidForm({ auction }: { auction?: Auction }) {
     type: 'success' | 'error' | null
     message: string
   }>({ type: null, message: '' })
+  const [needsConnection, setNeedsConnection] = useState(false)
+
+  useEffect(() => {
+    if (address && needsConnection) {
+      setNeedsConnection(false)
+    }
+  }, [address, needsConnection])
 
   const {
     register,
@@ -48,8 +56,20 @@ export function SealedBidForm({ auction }: { auction?: Auction }) {
     resolver: zodResolver(bidSchema),
   })
 
+  const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    if (!address) {
+      event.preventDefault()
+      setNeedsConnection(true)
+      return
+    }
+    return handleSubmit(onSubmit)(event)
+  }
+
   const onSubmit = async (data: BidFormData) => {
-    if (!address) return
+    if (!address) {
+      setNeedsConnection(true)
+      return
+    }
 
     setIsSubmitting(true)
     setSubmissionStatus({ type: null, message: '' })
@@ -169,7 +189,7 @@ export function SealedBidForm({ auction }: { auction?: Auction }) {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form onSubmit={handleFormSubmit} className="space-y-6">
       <div className="text-center mb-6">
         <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
           <Lock className="w-6 h-6 text-blue-600" />
@@ -305,7 +325,8 @@ export function SealedBidForm({ auction }: { auction?: Auction }) {
       )}
 
       <button
-        type="submit"
+        type={address ? 'submit' : 'button'}
+        onClick={!address ? () => setNeedsConnection(true) : undefined}
         disabled={isSubmitting}
         className="w-full flex items-center justify-center px-4 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
       >
@@ -314,11 +335,13 @@ export function SealedBidForm({ auction }: { auction?: Auction }) {
             <Loader2 className="w-5 h-5 mr-2 animate-spin" />
             Encrypting & Submitting...
           </>
-        ) : (
+        ) : address ? (
           <>
             <Lock className="w-5 h-5 mr-2" />
             Submit Encrypted Bid
           </>
+        ) : (
+          'Connect Wallet'
         )}
       </button>
 
@@ -347,6 +370,12 @@ export function SealedBidForm({ auction }: { auction?: Auction }) {
           </div>
         </div>
       </div>
+
+      <ConnectWalletModal
+        open={!address && needsConnection}
+        onClose={() => setNeedsConnection(false)}
+        title="Connect Your Wallet"
+      />
     </form>
   )
 }
