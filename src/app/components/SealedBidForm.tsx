@@ -3,6 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { encryptData } from '@shutter-network/shutter-sdk'
 import { Eye, EyeOff, Loader2, Lock } from 'lucide-react'
+import Image from 'next/image'
 import { useParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -19,7 +20,7 @@ const bidSchema = z.object({
     .string()
     .min(1, 'Name is required')
     .min(2, 'Name must be at least 2 characters'),
-  email: z.string().min(1, 'Email is required').email('Invalid email address'),
+  email: z.string(),
   bidAmount: z
     .string()
     .min(1, 'Bid amount is required')
@@ -156,34 +157,31 @@ export default function SealedBidForm({ auction }: { auction?: Auction }) {
   if (submissionStatus.type === 'success') {
     return (
       <div className="text-center">
-        <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <svg
-            className="w-8 h-8 text-green-600"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M5 13l4 4L19 7"
-            />
-          </svg>
+        <div className="flex items-center justify-center mx-auto my-5">
+          <Image src="/images/logo.webp" alt="Logo" width={120} height={52} />
         </div>
         <h2 className="text-xl font-semibold text-gray-900 mb-2">
           Bid Submitted!
         </h2>
         <p className="text-gray-600 mb-6">{submissionStatus.message}</p>
-        <button
-          onClick={() => {
-            setSubmissionStatus({ type: null, message: '' })
-            reset()
-          }}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-        >
-          Submit Another Bid
-        </button>
+        <div className="flex items-center justify-center gap-3">
+          <a
+            href="https://twitter.com/intent/tweet?text=Just%20dropped%20my%20bid%20in%20the%20@PaddleBattles%20sealed-bid%20auction%20for%20two%20@EFDevcon%20tickets%20🎟%20with%20all%20auction%20proceeds%20going%20to%20@crecimientoar%0A%0APlace%20your%20bid%20now%20👉%20https%3A%2F%2Fwww.paddlebattle.auction%2Fdevconnect"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-900 transition-colors"
+          >
+            Share on X
+          </a>
+          <a
+            href="https://farcaster.xyz/~/compose?text=Just%20dropped%20my%20bid%20in%20the%20@paddlebattle%20sealed-bid%20auction%20for%20two%20/devconnect%20tickets%20🎟%20with%20all%20auction%20proceeds%20going%20to%20@crecimiento%0A%0APlace%20your%20bid%20now%20👉%20https%3A%2F%2Fwww.paddlebattle.auction%2Fdevconnect"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+          >
+            Share on Farcaster
+          </a>
+        </div>
       </div>
     )
   }
@@ -191,8 +189,8 @@ export default function SealedBidForm({ auction }: { auction?: Auction }) {
   return (
     <form onSubmit={handleFormSubmit} className="space-y-6">
       <div className="text-center mb-6">
-        <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
-          <Lock className="w-6 h-6 text-blue-600" />
+        <div className="flex items-center justify-center mx-auto my-5">
+          <Image src="/images/logo.webp" alt="Logo" width={120} height={52} />
         </div>
         <h2 className="text-xl font-semibold text-gray-900 mb-1">
           Submit Your Sealed Bid
@@ -207,7 +205,7 @@ export default function SealedBidForm({ auction }: { auction?: Auction }) {
           htmlFor="auctionName"
           className="block text-sm font-medium text-gray-700 mb-2"
         >
-          Auction Name
+          Auction
         </label>
         <input
           type="text"
@@ -223,14 +221,14 @@ export default function SealedBidForm({ auction }: { auction?: Auction }) {
           htmlFor="name"
           className="block text-sm font-medium text-gray-700 mb-2"
         >
-          Full Name
+          Name or Pseudonym
         </label>
         <input
           {...register('name')}
           type="text"
           id="name"
           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-gray-900 placeholder-gray-500 bg-white"
-          placeholder="Enter your full name"
+          placeholder="Enter your name or pseudonym"
         />
         {errors.name && (
           <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
@@ -243,14 +241,14 @@ export default function SealedBidForm({ auction }: { auction?: Auction }) {
           htmlFor="email"
           className="block text-sm font-medium text-gray-700 mb-2"
         >
-          Email Address
+          Email or Telegram
         </label>
         <input
           {...register('email')}
-          type="email"
+          type="text"
           id="email"
           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-gray-900 placeholder-gray-500 bg-white"
-          placeholder="Enter your email address"
+          placeholder="Enter your email or telegram handle"
         />
         {errors.email && (
           <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
@@ -263,7 +261,7 @@ export default function SealedBidForm({ auction }: { auction?: Auction }) {
           htmlFor="bidAmount"
           className="block text-sm font-medium text-gray-700 mb-2"
         >
-          Bid Amount
+          Bid Amounts (USD)
         </label>
         <div className="relative">
           <input
@@ -276,7 +274,7 @@ export default function SealedBidForm({ auction }: { auction?: Auction }) {
             }
             id="bidAmount"
             className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-gray-900 placeholder-gray-500 bg-white"
-            placeholder="0.0"
+            placeholder="100"
           />
           <button
             type="button"
@@ -328,7 +326,7 @@ export default function SealedBidForm({ auction }: { auction?: Auction }) {
         type={address ? 'submit' : 'button'}
         onClick={!address ? () => setNeedsConnection(true) : undefined}
         disabled={isSubmitting}
-        className="w-full flex items-center justify-center px-4 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        className="w-full flex items-center justify-center px-4 py-3 bg-[#f02a0b] text-white font-medium rounded-lg focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
       >
         {isSubmitting ? (
           <>
@@ -362,10 +360,10 @@ export default function SealedBidForm({ auction }: { auction?: Auction }) {
           </div>
           <div className="ml-3">
             <p className="text-sm text-blue-700">
-              <strong>Privacy Notice:</strong> Your bid will be encrypted using
-              Shutter Network&apos;s threshold encryption. Only after the
-              auction ends will your bid be revealed, ensuring fair and
-              transparent bidding.
+              <strong>Privacy Tip:</strong> All bid information will be publicly
+              visible upon decryption at the end of the auction. If you do not
+              wish to dox yourself, please create a pseudonym, generate a new
+              email address and/or use a clean Ethereum address (no gas needed).
             </p>
           </div>
         </div>
