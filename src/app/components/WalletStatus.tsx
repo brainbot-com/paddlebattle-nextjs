@@ -19,7 +19,7 @@ export default function WalletStatus() {
       <div className="flex items-center justify-end">
         <button
           onClick={() => setIsModalOpen(true)}
-          className="inline-flex items-center space-x-2 px-3 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+          className="inline-flex items-center space-x-2 px-3 py-2 text-sm bg-[#f02a0b] text-white rounded-md transition-colors"
         >
           <WalletIcon className="w-4 h-4" />
           <span>Connect Wallet</span>

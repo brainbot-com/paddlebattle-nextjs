@@ -58,6 +58,9 @@ export async function fetchSealedAuctions(): Promise<Auction[]> {
 export interface SealedBid {
   id: number
   auctionSlug: string
+  auctionId: number
+  name: string
+  email: string
   walletAddress: `0x${string}`
   encryptedBid: string
   decryptedBidAmount: number
