@@ -160,11 +160,11 @@ export default function SealedBidForm({ auction }: { auction?: Auction }) {
         <div className="flex items-center justify-center mx-auto my-5">
           <Image src="/images/logo.webp" alt="Logo" width={120} height={52} />
         </div>
-        <h2 className="text-xl font-semibold text-gray-900 mb-2">
+        <h2 className="text-xl font-semibold text-gray-900 my-10">
           Bid Submitted!
         </h2>
         <p className="text-gray-600 mb-6">{submissionStatus.message}</p>
-        <div className="flex items-center justify-center gap-3">
+        <div className="flex items-center justify-center gap-3 mb-5">
           <a
             href="https://twitter.com/intent/tweet?text=Just%20dropped%20my%20bid%20in%20the%20@PaddleBattles%20sealed-bid%20auction%20for%20two%20@EFDevcon%20tickets%20🎟%20with%20all%20auction%20proceeds%20going%20to%20@crecimientoar%0A%0APlace%20your%20bid%20now%20👉%20https%3A%2F%2Fwww.paddlebattle.auction%2Fdevconnect"
             target="_blank"
