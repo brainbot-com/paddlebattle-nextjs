@@ -3,6 +3,7 @@
 import dynamic from 'next/dynamic'
 import { useParams } from 'next/navigation'
 import { useEffect, useMemo, useState } from 'react'
+import Footer from '../../../components/Footer'
 import { fetchAuctionBySlug, type Auction } from '../../../utils/api'
 
 const SealedBidForm = dynamic(
@@ -72,21 +73,12 @@ export default function BidFormPage() {
   }, [auction])
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
+    <main className="min-h-screen bg-[#cedcf8] py-12 px-4 sm:px-6 lg:px-8">
       <div className="absolute top-4 right-4 max-w-xs">
         <WalletStatus />
       </div>
 
       <div className="max-w-md mx-auto">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Sealed Bid Auction
-          </h1>
-          <p className="text-gray-600">
-            Submit your encrypted bid using Shutter Network
-          </p>
-        </div>
-
         <div className="bg-white rounded-lg shadow-lg p-6">
           {loading ? (
             <div className="text-center py-8">
@@ -135,9 +127,7 @@ export default function BidFormPage() {
           )}
         </div>
 
-        <div className="mt-8 text-center text-sm text-gray-500">
-          <p>Powered by Shutter Network • Privacy-preserving sealed bids</p>
-        </div>
+        <Footer className="mt-8" />
       </div>
     </main>
   )

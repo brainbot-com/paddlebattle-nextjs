@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import AuctionCard from './components/AuctionCard'
+import Footer from './components/Footer'
 import { fetchSealedAuctions, type Auction } from './utils/api'
 
 export default function Home() {
@@ -96,9 +97,7 @@ export default function Home() {
           )}
         </section>
 
-        <div className="mt-10 text-center text-sm text-gray-500">
-          <p>Powered by Shutter Network • Privacy-preserving sealed bids</p>
-        </div>
+        <Footer className="mt-10" />
       </div>
     </main>
   )
