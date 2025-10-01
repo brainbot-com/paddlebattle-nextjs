@@ -77,10 +77,10 @@ export default function ResultPage() {
               <h2 className="text-xl font-semibold text-gray-900">
                 Auction Results
               </h2>
-              <p className="mt-1 text-sm text-gray-500">
+              <h2 className="mt-1 text-xl font-semibold text-gray-500">
                 Auction {auction?.name}
-              </p>
-              <div className="mt-6 rounded-lg border border-gray-200 bg-gray-50 p-4">
+              </h2>
+              <div className="font-semibold mt-6 rounded-lg border border-red-500 bg-red-200 p-4">
                 <p className="text-gray-700">Auction Winner!</p>
                 <p className="mt-2 text-gray-600">{winnerName}</p>
                 <p className="mt-2 text-gray-600">{winnerAddress}</p>
@@ -146,8 +146,8 @@ export default function ResultPage() {
                       rel="noopener noreferrer"
                       className="text-blue-600"
                     >
-                      <button className="inline-flex items-center space-x-2 px-3 py-2 text-sm bg-gray-500 text-white rounded-md transition-colors cursor-pointer">
-                        Follow on Twitter
+                      <button className="inline-flex bg-black items-center space-x-2 px-3 py-2 text-sm bg-[#1DA1F2] text-white rounded-md transition-colors cursor-pointer hover:bg-[#1a8cd8]">
+                        Follow on X
                       </button>
                     </a>
                     <a
@@ -156,7 +156,7 @@ export default function ResultPage() {
                       rel="noopener noreferrer"
                       className="text-blue-600"
                     >
-                      <button className="inline-flex items-center space-x-2 px-3 py-2 text-sm bg-gray-500 text-white rounded-md transition-colors cursor-pointer">
+                      <button className="inline-flex bg-purple-600 items-center space-x-2 px-3 py-2 text-sm bg-[#6746F9] text-white rounded-md transition-colors cursor-pointer hover:bg-[#5631e9]">
                         Follow on Farcaster
                       </button>
                     </a>
