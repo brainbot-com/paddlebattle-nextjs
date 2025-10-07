@@ -97,7 +97,15 @@ export default function ResultPage() {
                 </div>
                 <div className="space-y-3">
                   {[...(bids || [])]
-                    .sort((a, b) => b.decryptedBidAmount - a.decryptedBidAmount)
+                    .sort((a, b) => {
+                      // Sort by decrypted bid amount DESC, then by createdAt ASC
+                      const amountDiff =
+                        b.decryptedBidAmount - a.decryptedBidAmount
+                      if (amountDiff !== 0) return amountDiff
+                      const aCreated = new Date(a.createdAt).getTime()
+                      const bCreated = new Date(b.createdAt).getTime()
+                      return aCreated - bCreated
+                    })
                     .map((bid, index) => (
                       <div
                         key={bid.id}
