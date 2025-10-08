@@ -26,12 +26,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <title>Sealed Bid Auction</title>
+        <title>Paddle Battle</title>
         <meta
           name="description"
           content="Privacy-preserving sealed bid auction using Shutter Network"
         />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" href="/favicon.ico" />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
