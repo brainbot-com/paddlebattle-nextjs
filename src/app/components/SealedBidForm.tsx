@@ -166,7 +166,7 @@ export default function SealedBidForm({ auction }: { auction?: Auction }) {
         <p className="text-gray-600 mb-6">{submissionStatus.message}</p>
         <div className="flex items-center justify-center gap-3 mb-5">
           <a
-            href="https://twitter.com/intent/tweet?text=Just%20dropped%20my%20bid%20in%20the%20@PaddleBattles%20sealed-bid%20auction%20for%20two%20@EFDevcon%20tickets%20🎟%20with%20all%20auction%20proceeds%20going%20to%20@crecimientoar%0A%0APlace%20your%20bid%20now%20👉%20https%3A%2F%2Fwww.paddlebattle.auction%2Fdevconnect"
+            href="https://twitter.com/intent/tweet?text=Just%20dropped%20my%20bid%20in%20the%20@PaddleBattles%20vickrey%20auction%20for%201x%20@EFDevcon%20ticket%20and%201x%20@FundingCommons%20ticket%20with%20all%20auction%20proceeds%20going%20to%20@APRENDOlatam%0A%0APlace%20your%20bid%20now%20👉%20https%3A%2F%2Fwww.paddlebattle.auction%2Fdouble-deal"
             target="_blank"
             rel="noopener noreferrer"
             className="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-900 transition-colors"
@@ -174,7 +174,7 @@ export default function SealedBidForm({ auction }: { auction?: Auction }) {
             Share on X
           </a>
           <a
-            href="https://farcaster.xyz/~/compose?text=Just%20dropped%20my%20bid%20in%20the%20@paddlebattle%20sealed-bid%20auction%20for%20two%20/devconnect%20tickets%20🎟%20with%20all%20auction%20proceeds%20going%20to%20@crecimiento%0A%0APlace%20your%20bid%20now%20👉%20https%3A%2F%2Fwww.paddlebattle.auction%2Fdevconnect"
+            href="https://farcaster.xyz/~/compose?text=Just%20dropped%20my%20bid%20in%20the%20@paddlebattle%20sealed-bid%20auction%20for%201x%20/devconnect%20ticket%20and%201x%20Funding%20the%20Commons%20ticket%20with%20all%20auction%20proceeds%20going%20to%20APRENDO%0A%0APlace%20your%20bid%20now%20👉%20https%3A%2F%2Fwww.paddlebattle.auction%2Fdouble-deal"
             target="_blank"
             rel="noopener noreferrer"
             className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
